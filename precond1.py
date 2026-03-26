@@ -118,7 +118,6 @@ def compute_forces_grid_parallel(positions, masses, bounds_max, grid_res):
                 dist_sq_com = dx_com**2 + dy_com**2 + dz_com**2
                 dist_com = np.sqrt(dist_sq_com)
                 
-                # 判断：距离足够远 -> 使用重心近似
                 if 0.5 * dist_com > R_threshold:
                     if dist_sq_com > 1e-10:
                         f = (G * cell_masses[c_idx]) / (dist_sq_com * dist_com)
