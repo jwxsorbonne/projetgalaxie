@@ -35,7 +35,7 @@ def compute_forces_numba(positions, masses):
             if dist < 1e-5:
                 continue
                 
-            # F = G * m / r^3 * vec_r  (这里算出的其实已经是加速度 a)
+            # F = G * m / r^3 * vec_r 
             f = (G * masses[j]) / (dist_sq * dist)
             
             acc[i, 0] += f * dx
