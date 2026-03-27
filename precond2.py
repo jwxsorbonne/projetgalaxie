@@ -23,6 +23,17 @@ EPS2 = 1e-8
 
 @njit(cache=True)
 def _compute_bounds_xy(positions, margin=0.10):
+    """
+    Calcule les limites (bornes) maximales de l'espace en 2D (axes x et y) pour englober toutes les particules.
+    Crée une zone de délimitation carrée centrée sur l'origine.
+
+    Args:
+        positions (ndarray): Tableau 2D contenant les coordonnées (x, y, z) des particules.
+        margin (float): Marge supplémentaire ajoutée aux limites pour éviter que les particules ne sortent de la grille (par défaut 10%).
+
+    Returns:
+        tuple: (xmin, xmax, ymin, ymax) représentant les bornes de la boîte englobante.
+    """
     n = positions.shape[0]
     max_abs_x = 0.0
     max_abs_y = 0.0
@@ -44,6 +55,24 @@ def _compute_bounds_xy(positions, margin=0.10):
 
 @njit(cache=True)
 def _build_grid_2d(positions, xmin, xmax, ymin, ymax, grid_res):
+    """
+    Construit une grille 2D pour partitionner l'espace et assigne chaque particule à une cellule.
+    Utilise une structure de type CSR (Compressed Sparse Row) pour un accès rapide aux particules de chaque cellule.
+
+    Args:
+        positions (ndarray): Tableau des coordonnées des particules.
+        xmin, xmax, ymin, ymax (float): Les bornes spatiales de la grille.
+        grid_res (int): La résolution de la grille (nombre de cellules par côté).
+
+    Returns:
+        tuple contenant :
+            - dx, dy (float): Dimensions d'une cellule.
+            - row_ptr (ndarray): Pointeurs de début pour chaque cellule dans col_indices.
+            - col_indices (ndarray): Indices des particules triées par cellule.
+            - cell_counts (ndarray): Nombre de particules dans chaque cellule.
+            - cell_idx_of_particle (ndarray): L'index de la cellule à laquelle appartient chaque particule.
+            - occupied_cells (ndarray): Liste des indices des cellules qui contiennent au moins une particule.
+    """
     n = positions.shape[0]
     num_cells = grid_res * grid_res
     dx = (xmax - xmin) / grid_res
@@ -109,6 +138,22 @@ def _build_grid_2d(positions, xmin, xmax, ymin, ymax, grid_res):
 
 @njit(cache=True)
 def _compute_cell_properties(positions, masses, row_ptr, col_indices, occupied_cells, num_cells):
+    """
+    Calcule la masse totale et le centre de masse (barycentre) pour chaque cellule occupée de la grille.
+
+    Args:
+        positions (ndarray): Coordonnées des particules.
+        masses (ndarray): Masses des particules.
+        row_ptr (ndarray): Pointeurs de début pour chaque cellule.
+        col_indices (ndarray): Indices des particules.
+        occupied_cells (ndarray): Indices des cellules non vides.
+        num_cells (int): Nombre total de cellules dans la grille.
+
+    Returns:
+        tuple contenant :
+            - cell_mass (ndarray): La masse totale cumulée pour chaque cellule.
+            - cell_com (ndarray): Les coordonnées (x, y, z) du centre de masse pour chaque cellule.
+    """
     cell_mass = np.zeros(num_cells, dtype=np.float32)
     cell_com = np.zeros((num_cells, 3), dtype=np.float32)
 
@@ -138,6 +183,23 @@ def _compute_cell_properties(positions, masses, row_ptr, col_indices, occupied_c
 
 @njit(parallel=True, fastmath=True, cache=True)
 def compute_forces_grid_parallel(positions, masses, grid_res, theta, margin=0.10):
+    """
+    Calcule les forces gravitationnelles agissant sur chaque particule en utilisant une approche parallèle basée sur la grille.
+    
+    Cette fonction utilise un critère d'angle d'ouverture (theta) pour optimiser les calculs :
+    - Si une cellule est suffisamment éloignée, l'interaction est approximée en utilisant le centre de masse de la cellule.
+    - Si la cellule est proche (ou s'il s'agit de la cellule de la particule elle-même), les interactions directes particule-particule sont calculées de manière exacte.
+
+    Args:
+        positions (ndarray): Coordonnées des particules.
+        masses (ndarray): Masses des particules.
+        grid_res (int): Résolution de la grille de partitionnement.
+        theta (float): Critère de l'angle d'ouverture pour l'approximation (plus il est grand, plus le calcul est rapide mais moins précis).
+        margin (float): Marge pour la boîte englobante.
+
+    Returns:
+        ndarray: Un tableau (n, 3) contenant les vecteurs d'accélération (ax, ay, az) pour chaque particule.
+    """
     n = positions.shape[0]
     acc = np.zeros((n, 3), dtype=np.float32)
 
