@@ -94,7 +94,7 @@ def _build_grid_2d(positions, xmin, xmax, ymin, ymax, grid_res):
         cy = int((py - ymin) * inv_dy)
 
         if cx < 0:
-            cx = 0
+            cx = 0   
         elif cx >= grid_res:
             cx = grid_res - 1
         if cy < 0:
