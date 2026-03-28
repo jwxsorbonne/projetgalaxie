@@ -1,4 +1,10 @@
 # rapport Projet Galaxie — Simulation N-corps
+### Auteurs:
+
+- Huixin CHEN
+- Weihong GAO
+- Junwen XIAO
+
 ## Présentation
 
 Ce projet propose plusieurs implémentations d’une simulation gravitationnelle **N-corps** pour modéliser l’évolution d’une galaxie.  
