@@ -88,16 +88,15 @@ Les figures suivantes comparent le **temps d’exécution par pas de temps** en 
 
 ### Benchmark pour `dt = 0.01`
 
-![Benchmark dt=0.01](./dt0.01.png)
+![dt=0.01](Rapport/dt0.01.png)
 
 ### Benchmark pour `dt = 0.05`
 
-![Benchmark dt=0.05](./dt0.05.png)
+![dt=0.05](Rapport/dt0.05.png)
 
 ### Benchmark pour `dt = 0.1`
 
-![Benchmark dt=0.1](./dt0.1.png)
-
+![dt=0.1](Rapport/dt0.1.png)
 ---
 
 ## Analyse des performances
@@ -143,8 +142,6 @@ Les trois graphiques montrent que la valeur de `dt` change peu la hiérarchie gl
 
 - le classement des méthodes reste presque le même ;
 - les écarts entre courbes sont globalement conservés ;
-- les meilleures méthodes pour `dt = 0.01` restent aussi les meilleures pour `dt = 0.05` et `dt = 0.1`.
-
 Cela signifie que, dans ce projet, le coût de calcul dépend surtout :
 - de la méthode d’intégration ;
 - de la structure de données utilisée ;
@@ -170,17 +167,5 @@ En résumé, pour une simulation de galaxie avec un grand nombre d’étoiles, l
 - **organisation mémoire efficace**,
 - **partitionnement spatial du domaine**,
 - et **approximation contrôlée des interactions lointaines**.
-
----
-
-## Perspectives d’amélioration
-
-Plusieurs pistes peuvent prolonger ce travail :
-
-- tester des tailles encore plus grandes ;
-- mesurer aussi la **précision physique** et pas seulement le temps d’exécution ;
-- comparer l’évolution de l’énergie totale selon les schémas numériques ;
-- adapter dynamiquement la résolution de la grille ;
-- explorer des méthodes de type **Barnes-Hut** ou **Fast Multipole Method** pour aller encore plus loin.
 
 ---
