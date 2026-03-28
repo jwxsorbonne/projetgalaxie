@@ -8,13 +8,12 @@ from numba import njit, prange
 script_dir = os.path.dirname(__file__)
 sys.path.append(script_dir)
 
-from galaxy_generator import generate_galaxy
-
+from Fichiers_Fournis.galaxy_generator import generate_galaxy
 try:
-    from visualizer3d_vbo import Visualizer3D
+    from Fichiers_Fournis.visualizer3d_vbo import Visualizer3D
     print("Using VBO Visualizer")
 except ImportError:
-    from visualizer3d_sans_vbo import Visualizer3D
+    from Fichiers_Fournis.visualizer3d_sans_vbo import Visualizer3D
     print("Using Standard Visualizer (No VBO)")
 
 G = 1.560339e-13
